@@ -1,0 +1,90 @@
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/dm-sans-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lora';
+  src: url('/lora-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light;
+  --font-reading: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-editorial: Lora, Georgia, serif;
+  --canvas: #edf2ee;
+  --panel: #ffffff;
+  --panel-hover: #f4faf5;
+  --glass: rgb(255 255 255 / 88%);
+  --edge: rgb(22 44 32 / 9%);
+  --text: #24312a;
+  --muted: #59695f;
+  --accent: #3ee08a;
+  --accent-hover: #2ad076;
+  --accent-ink: #1e7147;
+  --accent-soft: #e4f7ec;
+  --lead: #e0ece3;
+  --neutral: #e9f0eb;
+  --on-strong: #f9fdf9;
+  --on-accent: #08130c;
+  --control-edge: #83978a;
+  --focus-color: #1a9854;
+  --brand-filter: none;
+  --danger: #a23d42;
+  --danger-wash: #fbeaec;
+  --caution: #835315;
+  --caution-wash: #fcf1dc;
+  --calm: #366856;
+  --calm-wash: #e9f4ee;
+  --elevation-soft: 0 6px 24px rgb(40 70 51 / 6%);
+  --elevation-floating: 0 12px 40px rgb(40 70 51 / 10%);
+  --elevation-reader: 0 24px 100px rgb(10 23 15 / 24%);
+  --radius-card: 28px;
+  --radius-control: 999px;
+  --content-max: 1184px;
+  --gutter: 32px;
+  --ease-reading: cubic-bezier(.2, .8, .2, 1);
+  --feedback-time: 160ms;
+  --entrance-time: 220ms;
+  --exit-time: 150ms;
+}
+
+:root[data-appearance='dark'] {
+  color-scheme: dark;
+  --canvas: #141915;
+  --panel: #1e2420;
+  --panel-hover: #242c26;
+  --glass: rgb(30 36 32 / 92%);
+  --edge: rgb(255 255 255 / 7%);
+  --text: #d9e2da;
+  --muted: #9eaba2;
+  --accent: #3ee08a;
+  --accent-hover: #4de89a;
+  --accent-ink: #9df0c3;
+  --accent-soft: #1d3a29;
+  --lead: #27322b;
+  --neutral: #252d28;
+  --on-strong: #16291d;
+  --on-accent: #08130c;
+  --control-edge: #73907e;
+  --focus-color: #3ee08a;
+  --brand-filter: brightness(.95);
+  --danger: #f5a6ab;
+  --danger-wash: #3a2a30;
+  --caution: #ecc58b;
+  --caution-wash: #382f1f;
+  --calm: #a7dbc1;
+  --calm-wash: #1f2e26;
+  --elevation-soft: 0 6px 28px rgb(0 0 0 / 8%);
+  --elevation-floating: 0 12px 40px rgb(0 0 0 / 18%);
+  --elevation-reader: 0 24px 100px rgb(0 0 0 / 45%);
+}
+
+@media (max-width: 700px) { :root { --gutter: 20px; --radius-card: 24px; } }
+@media (prefers-reduced-motion: reduce) { :root { --feedback-time: 0s; --entrance-time: 0s; --exit-time: 0s; } }

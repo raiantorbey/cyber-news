@@ -1,0 +1,15 @@
+.git
+.gitignore
+.env
+*.env.local
+*.log
+*.sql
+*.dump
+
+**/__pycache__
+**/*.py[cod]
+**/.pytest_cache
+**/.venv
+**/node_modules
+**/dist
+**/coverage

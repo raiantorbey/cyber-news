@@ -1,0 +1,83 @@
+x-backend-common: &backend-common
+  build:
+    context: ./backend
+  env_file:
+    - path: .env
+      required: false
+  environment: &backend-environment
+    SIGNALWATCH_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-signalwatch}:${POSTGRES_PASSWORD:-signalwatch-local}@db:5432/${POSTGRES_DB:-signalwatch}
+    SIGNALWATCH_CORS_ORIGINS: '${SIGNALWATCH_CORS_ORIGINS:-["http://localhost:3000","http://127.0.0.1:3000"]}'
+    SIGNALWATCH_USER_AGENT: ${SIGNALWATCH_USER_AGENT:-CyberNews/0.1 (+https://example.invalid/contact)}
+    SIGNALWATCH_REQUEST_TIMEOUT_SECONDS: ${SIGNALWATCH_REQUEST_TIMEOUT_SECONDS:-15}
+    SIGNALWATCH_REQUEST_RETRIES: ${SIGNALWATCH_REQUEST_RETRIES:-2}
+    SIGNALWATCH_GITHUB_TOKEN: ${SIGNALWATCH_GITHUB_TOKEN:-}
+    SIGNALWATCH_NVD_API_KEY: ${SIGNALWATCH_NVD_API_KEY:-}
+    SIGNALWATCH_RSS_INTERVAL_SECONDS: ${SIGNALWATCH_RSS_INTERVAL_SECONDS:-900}
+    SIGNALWATCH_NVD_INTERVAL_SECONDS: ${SIGNALWATCH_NVD_INTERVAL_SECONDS:-3600}
+    SIGNALWATCH_CISA_INTERVAL_SECONDS: ${SIGNALWATCH_CISA_INTERVAL_SECONDS:-3600}
+    SIGNALWATCH_GITHUB_INTERVAL_SECONDS: ${SIGNALWATCH_GITHUB_INTERVAL_SECONDS:-3600}
+    SIGNALWATCH_FRESHNESS_THRESHOLD_SECONDS: ${SIGNALWATCH_FRESHNESS_THRESHOLD_SECONDS:-7200}
+  init: true
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-signalwatch}
+      POSTGRES_USER: ${POSTGRES_USER:-signalwatch}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-signalwatch-local}
+    volumes:
+      - signalwatch-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+    restart: unless-stopped
+
+  migrate:
+    <<: *backend-common
+    command: ["alembic", "upgrade", "head"]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  backend:
+    <<: *backend-common
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    restart: unless-stopped
+
+  worker:
+    <<: *backend-common
+    command: ["signalwatch-worker"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: /api/v1
+    environment:
+      API_UPSTREAM: backend:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:3000:8080"
+    restart: unless-stopped
+
+volumes:
+  signalwatch-db:
