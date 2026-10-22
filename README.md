@@ -2,6 +2,10 @@
 
 CyberNews is a local, read-only cybersecurity publication, powered internally by the SignalWatch services. It combines attributed RSS/Atom reporting, NVD CVEs, CISA Known Exploited Vulnerabilities, and optionally GitHub security-tool discovery. The service does not scrape linked articles, generate AI content, or provide user accounts.
 
+## Naming
+
+CyberNews is the publication — the name that appears in the interface, the API title, and this repository. SignalWatch is the internal engine: the original working name of this codebase, which survives in the backend package, the `SIGNALWATCH_*` environment variables, the PostgreSQL database and volume, the `signalwatch-ingest` and `signalwatch-worker` commands, and the `signalwatch` container user. The two layers are deliberately distinct, and SignalWatch is not a separate product or a third-party service.
+
 Stories open in publication-time order, with twelve reports per page and the last seven days selected initially. Topic navigation, search, publisher selection, and an all-dates option provide access to the archive. Article excerpts, vulnerability advisories, and source freshness open in the centered reading room. See [the publication design system](design-system/README.md) for the interface specification.
 
 ## Architecture
